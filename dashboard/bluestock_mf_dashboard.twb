@@ -1,0 +1,139 @@
+<?xml version='1.0' encoding='utf-8' ?>
+
+<!-- Bluestock Fintech Mutual Fund Analytics Tableau Workbook (.twb) -->
+<workbook original-version='18.1' source-build='2024.1.0' version='18.1' xmlns:user='http://www.tableausoftware.com/xml/user'>
+  <document-format-change-manifest>
+    <AutoCreateAndUpdateDIPFlavors />
+    <SchemaViewerState />
+  </document-format-change-manifest>
+  <preferences>
+    <preference name='ui.encoding' value='UTF-8' />
+  </preferences>
+  <datasources>
+    <datasource caption='bluestock_mf (SQLite)' inline='true' name='sqlite.bluestock_mf' version='18.1'>
+      <connection class='sqlite' database='bluestock_mf.db' driver='SQLite3' server=''>
+        <relation name='dim_fund' table='dim_fund' type='table' />
+        <relation name='fact_nav' table='fact_nav' type='table' />
+        <relation name='fact_transactions' table='fact_transactions' type='table' />
+        <relation name='fact_performance' table='fact_performance' type='table' />
+        <relation name='fact_risk_metrics' table='fact_risk_metrics' type='table' />
+        <relation name='fact_aum' table='fact_aum' type='table' />
+        <relation name='fact_sip_industry' table='fact_sip_industry' type='table' />
+      </connection>
+      <column datatype='integer' name='[amfi_code]' role='dimension' type='ordinal' />
+      <column datatype='string' name='[scheme_name]' role='dimension' type='nominal' />
+      <column datatype='string' name='[fund_house]' role='dimension' type='nominal' />
+      <column datatype='string' name='[category]' role='dimension' type='nominal' />
+      <column datatype='real' name='[cagr_pct]' role='measure' type='quantitative' />
+      <column datatype='real' name='[sharpe_ratio]' role='measure' type='quantitative' />
+      <column datatype='real' name='[sortino_ratio]' role='measure' type='quantitative' />
+      <column datatype='real' name='[volatility_ann_pct]' role='measure' type='quantitative' />
+      <column datatype='real' name='[alpha]' role='measure' type='quantitative' />
+      <column datatype='real' name='[beta]' role='measure' type='quantitative' />
+      <column datatype='real' name='[max_drawdown_pct]' role='measure' type='quantitative' />
+      <layout dim-ordering='alphabetic' dim-percentage='0.5' measure-ordering='alphabetic' measure-percentage='0.5' show-structure='true' />
+    </datasource>
+  </datasources>
+  <worksheets>
+    <worksheet name='Page 1 - Industry Overview'>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='bluestock_mf (SQLite)' name='sqlite.bluestock_mf' />
+          </datasources>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Automatic' />
+          </pane>
+        </panes>
+        <rows>[sqlite.bluestock_mf].[fund_house]</rows>
+        <cols>[sqlite.bluestock_mf].[cagr_pct]</cols>
+      </table>
+    </worksheet>
+    <worksheet name='Page 2 - Fund Performance'>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='bluestock_mf (SQLite)' name='sqlite.bluestock_mf' />
+          </datasources>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Circle' />
+          </pane>
+        </panes>
+        <rows>[sqlite.bluestock_mf].[cagr_pct]</rows>
+        <cols>[sqlite.bluestock_mf].[volatility_ann_pct]</cols>
+      </table>
+    </worksheet>
+    <worksheet name='Page 3 - Investor Analytics'>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='bluestock_mf (SQLite)' name='sqlite.bluestock_mf' />
+          </datasources>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Automatic' />
+          </pane>
+        </panes>
+        <rows />
+        <cols />
+      </table>
+    </worksheet>
+    <worksheet name='Page 4 - SIP &amp; Market Trends'>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='bluestock_mf (SQLite)' name='sqlite.bluestock_mf' />
+          </datasources>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Automatic' />
+          </pane>
+        </panes>
+        <rows />
+        <cols />
+      </table>
+    </worksheet>
+  </worksheets>
+  <dashboards>
+    <dashboard name='Bluestock Mutual Fund Analytics Dashboard'>
+      <style />
+      <size maxheight='800' maxwidth='1200' minheight='800' minwidth='1200' />
+      <zones>
+        <zone h='100000' id='1' type='layout-basic' w='100000' x='0' y='0'>
+          <zone h='98000' id='2' name='Page 1 - Industry Overview' w='98000' x='1000' y='1000' />
+        </zone>
+      </zones>
+    </dashboard>
+  </dashboards>
+  <windows version='18.1'>
+    <window class='dashboard' name='Bluestock Mutual Fund Analytics Dashboard'>
+      <active pane-at-count='1' />
+    </window>
+  </windows>
+</workbook>

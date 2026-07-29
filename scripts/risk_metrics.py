@@ -577,6 +577,37 @@ def calculate_diversification_score(hhi_value: float, num_holdings: int) -> floa
     return float(score)
 
 
+def calculate_var_cvar(
+    daily_returns: pd.Series, confidence_level: float = 0.95
+) -> tuple[float, float]:
+    """Calculate Historical Value at Risk (VaR) and Conditional VaR (CVaR / Expected Shortfall).
+
+    Formula:
+        VaR_5% = 5th percentile of daily return distribution
+        CVaR = Mean of daily returns falling below the VaR threshold
+
+    Args:
+        daily_returns: Series of daily returns.
+        confidence_level: Confidence level (default 0.95 for 95% VaR).
+
+    Returns:
+        Tuple[float, float]: (VaR percentage, CVaR percentage) as percentage numbers (e.g. -2.15%, -3.40%).
+    """
+    clean_returns = daily_returns.dropna()
+    if len(clean_returns) < 5:
+        return (0.0, 0.0)
+
+    cutoff_percentile = (1.0 - confidence_level) * 100.0
+    var_threshold = float(np.percentile(clean_returns * 100.0, cutoff_percentile))
+
+    below_var = clean_returns * 100.0
+    below_var = below_var[below_var <= var_threshold]
+
+    cvar_value = float(below_var.mean()) if not below_var.empty else var_threshold
+
+    return (var_threshold, cvar_value)
+
+
 # ==========================================
 # 5. Core Execution & DB Load Orchestrator
 # ==========================================

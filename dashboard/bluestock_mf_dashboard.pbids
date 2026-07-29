@@ -1,0 +1,25 @@
+{
+  "version": "0.1",
+  "connections": [
+    {
+      "details": {
+        "protocol": "sqlite3",
+        "database": "bluestock_mf.db"
+      },
+      "options": {
+        "tables": [
+          "dim_fund",
+          "dim_date",
+          "fact_nav",
+          "fact_transactions",
+          "fact_performance",
+          "fact_portfolio",
+          "fact_aum",
+          "fact_sip_industry",
+          "fact_risk_metrics"
+        ]
+      },
+      "mode": "DirectQuery"
+    }
+  ]
+}
