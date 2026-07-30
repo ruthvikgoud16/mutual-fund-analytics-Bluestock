@@ -32,11 +32,10 @@ os.makedirs(FIGURES_DIR, exist_ok=True)
 os.makedirs(REPORTS_DIR, exist_ok=True)
 os.makedirs(NOTEBOOKS_DIR, exist_ok=True)
 
-conn = sqlite3.connect(DB_PATH)
-
 
 def generate_visualizations():
     print("Generating visualizations...")
+    conn = sqlite3.connect(DB_PATH)
 
     # 1. Category Distribution
     df_cat = pd.read_sql(
@@ -348,6 +347,7 @@ def generate_visualizations():
     plt.close()
 
     print("All visualizations saved successfully in figures/.")
+    conn.close()
 
 
 def generate_report():
