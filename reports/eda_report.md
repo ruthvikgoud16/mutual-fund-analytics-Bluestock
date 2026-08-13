@@ -1,74 +1,62 @@
-# Phase 3: Exploratory Data Analysis (EDA) Report
+# Phase 3: Exploratory Data Analysis (EDA) Verification Report
 
 ## 1. Executive Summary
-This report summarizes the findings of the Exploratory Data Analysis (EDA) stage for the **Bluestock Mutual Fund Analytics Platform**. The platform integrates multidimensional datasets comprising scheme metadata, daily Net Asset Value (NAV) valuations, quarterly assets under management (AUM), investor transactions, portfolio holdings, monthly SIP inflows, and benchmarks. Using 18 custom-crafted charts, we present comprehensive insights into mutual fund characteristics, category structures, risk-return statistics, portfolio sector allocations, investor behavior, and outliers.
+This report presents the verified Exploratory Data Analysis (EDA) for the **Bluestock Mutual Fund Analytics Platform**. The analysis investigates 40 mutual fund schemes, 64,320 daily NAV observations, 90 quarterly AUM snapshots, 48 monthly SIP flow metrics, 21 industry folio milestones, 32,778 investor transactions, and 322 equity portfolio holdings stored in normalized relational structures (`mutual_fund_analytics.db`).
 
-## 2. Dataset Overview
-The relational database `mutual_fund_analytics.db` hosts normalized tables matching our validated schema:
-- **dim_fund**: 40 distinct schemes tracking characteristics such as expense ratios, launch dates, exit loads, and fund managers.
-- **dim_date**: Calendar dimensions covering weekdays and quarters.
-- **fact_nav**: 64,320 rows of daily NAV entries representing time-series prices.
-- **fact_aum**: 90 quarterly AUM snapshots.
-- **fact_sip_industry**: 48 months of SIP inflows.
-- **fact_performance**: Returns (1y, 3y, 5y) and risk ratios (Sharpe, Sortino, Alpha, Beta) for 40 schemes.
-- **fact_transactions**: 32,778 transaction records.
-- **fact_portfolio**: 322 stock allocations across schemes.
+---
 
-## 3. Individual Analysis Sections
+## 2. Requirement Verification & Key Analytical Metrics
 
-### A. Fund & Category Analysis
-We evaluated the structure of the 40 mutual fund schemes. Equity remains the dominant asset class with a large count of schemes, followed by Debt. Expense ratios average around 1.5%, with Direct plans offering a cheaper option than Regular plans. 
-- *AUM Concentration*: AUM is dominated by a few large Asset Management Companies (e.g., SBI Mutual Fund, ICICI Prudential, and HDFC Mutual Fund).
+### 1. NAV Trend Analysis (REQ-01)
+- **Dataset**: `02_nav_history.csv` / `fact_nav` (64,320 rows, 40 schemes, Jan 3, 2022 to May 29, 2026).
+- **Key Observation**: Average NAV across categories expanded from ~Rs. 42.50 to ~Rs. 89.40. Shaded annotations highlight the **2023 Bull Run** (March-December 2023) where equity NAVs rallied over +28%, and the **2024 Market Correction** (June-November 2024) which saw temporary drawdowns of 6-8%.
 
-### B. NAV Volatility & Time Series
-Net Asset Values across all schemes follow a log-normal distribution. The historical daily average NAV displays steady upward growth despite occasional short-term market consolidation periods. Schemes such as SBI Bluechip and Mirae Asset Large Cap demonstrate the highest peak NAVs due to early launch dates (accumulation effect).
+### 2. AUM Growth by AMC (REQ-02)
+- **Dataset**: `03_aum_by_fund_house.csv` / `fact_aum` (90 rows, 10 AMCs, 2022-2025).
+- **Key Observation**: Industry AUM is highly concentrated. SBI Mutual Fund maintains total market dominance, reaching **Rs. 12.50 Lakh Crore (Rs. 12,50,000 Cr)** in Q1 & Q4 2025, followed by ICICI Prudential (~Rs. 10.74L Cr) and HDFC Mutual Fund (~Rs. 9.30L Cr).
 
-### C. SIP Industry Trends
-Monthly SIP inflows show strong positive growth over the 48-month reporting window, rising from ~11,000 crores to over 20,000 crores. Year-over-Year (YoY) growth rates are positive, indicating robust compounding of retail capital in mutual funds.
+### 3. Monthly SIP Inflow Time Series (REQ-03)
+- **Dataset**: `04_monthly_sip_inflows.csv` / `fact_sip_industry` (48 rows, Jan 2022 - Dec 2025).
+- **Key Observation**: Monthly SIP inflows increased continuously from Rs. 11,517 Cr in Jan 2022 to an **all-time high of Rs. 31,002 Cr in Dec 2025**, representing a CAGR of ~28% in retail systematic accumulation.
 
-### D. Investor Transactions & Regional Analysis
-The investor transaction dataset represents a highly active demographic:
-- **Purchases vs Redemptions**: Inflows (SIP & Lumpsum) outnumber outflows (Redemptions) in total volume, creating net positive cash inflows.
-- **Regional Volume**: Major states like Maharashtra, Gujarat, Karnataka, and Telangana drive the highest transaction value in rupees.
+### 4. Category-Wise Inflow Heatmap (REQ-04)
+- **Dataset**: `05_category_inflows.csv` (144 rows, FY 2024-25).
+- **Key Observation**: Sectoral/Thematic funds (peak Rs. 18,117 Cr in June 2024) and Small Cap funds (average ~Rs. 3,200 Cr/month) registered the highest net inflows, while Large Cap funds experienced moderate, steady inflows.
 
-### E. Risk-Return Performance Analysis
-- **Outperformance vs Benchmark**: Over 80% of schemes outperformed their respective index benchmarks over a 3-year period, generating positive Alpha.
-- **Risk Metrics**: High Sharpe and Sortino ratios are concentrated in hybrid and large-cap equity categories.
+### 5. Investor Demographics (REQ-05)
+- **Dataset**: `08_investor_transactions.csv` / `fact_transactions` (32,778 rows).
+- **Key Observation**: 
+  - **Age Group**: Investors aged 26-35 represent the single largest demographic cohort (41.1% of transactions), followed by 36-45 (24.9%).
+  - **SIP Ticket Size**: Investors in the 46-55 age bracket exhibit the highest median SIP amount (~Rs. 8,500/month).
+  - **Gender Split**: Male investors account for 66.5% (21,809) of transactions versus 33.5% (10,969) Female investors.
 
-### F. Portfolio Sector Allocations & Concentration
-- **Sector Focus**: Banks/Financial Services, Technology, and Energy represent the heaviest sector weights.
-- **Concentration**: The top 4 sectors account for more than 60% of the entire portfolio holdings.
+### 6. Geographic Distribution (REQ-06)
+- **Dataset**: `08_investor_transactions.csv`.
+- **Key Observation**: 
+  - **Top States by SIP Amount**: Madhya Pradesh (Rs. 2.07 Cr), Punjab (Rs. 2.01 Cr), Telangana (Rs. 1.86 Cr), Tamil Nadu (Rs. 1.84 Cr), and Gujarat (Rs. 1.84 Cr).
+  - **City Tier Split**: Top 30 (T30) cities drive 66.3% (21,719) of total transactions, while Beyond 30 (B30) cities contribute 33.7% (11,059).
 
-## 4. Visualizations & Business Interpretations
-All figures have been rendered and saved under `figures/`:
-1. **01_category_distribution.png**: Depicts scheme representation.
-2. **02_expense_ratio_distribution.png**: Identifies charging patterns.
-3. **03_aum_by_fund_house.png**: Highlights AUM concentration.
-4. **04_nav_distribution.png**: Log distribution of NAVs.
-5. **05_nav_growth_trends.png**: Steady compounding over time.
-6. **06_top_bottom_nav.png**: Outlines the highest NAV schemes.
-7. **07_sip_inflows_trend.png**: Consistent retail compounding.
-8. **08_sip_growth_yoy.png**: Compilation of YoY growth rate.
-9. **09_sip_active_accounts.png**: Active accounts expansion.
-10. **10_purchases_vs_redemptions.png**: Breakdown of transaction types.
-11. **11_net_inflows_trend.png**: Net daily investor capital inflows.
-12. **12_state_transactions.png**: Regional transaction concentration.
-13. **13_best_schemes_cagr.png**: Performance profile of top funds.
-14. **14_benchmark_vs_scheme.png**: Outperformance scatter plot.
-15. **15_sector_allocations.png**: Sector preference list.
-16. **16_portfolio_concentration.png**: Concentration donut chart.
-17. **17_performance_correlation.png**: Statistical correlation matrix.
-18. **18_outlier_detection.png**: Transaction boxplot outliers.
+### 7. Industry Folio Count Growth (REQ-07)
+- **Dataset**: `06_industry_folio_count.csv` (21 rows, Jan 2022 - Dec 2025).
+- **Key Observation**: Total mutual fund folios expanded from **13.26 Crore in Jan 2022 to 26.12 Crore in Dec 2025** (nearly doubling), driven primarily by Equity folios rising from 9.28 Cr to 18.28 Cr.
 
-## 5. Key Findings
-1. Retail SIP inflows represent a sticky capital base, growing steadily year-over-year.
-2. There is a strong correlation between Alpha and Sharpe ratio, confirming that active managers add risk-adjusted value.
-3. Financial services sector holdings create a slight concentration risk for index-hugging equity funds.
+### 8. Pairwise NAV Return Correlation (REQ-08)
+- **Dataset**: `02_nav_history.csv`.
+- **Key Observation**: Daily returns across top equity funds (e.g., SBI Bluechip, HDFC Top 100, ICICI Pru Large Cap) demonstrate strong positive pairwise correlations (r = 0.82 to 0.94), reflecting underlying broad market co-movement.
 
-## 6. Business Recommendations
-- **Cost Optimization**: Launch and market Direct plans with lower expense ratios to cater to digital investors.
-- **Regional Expansion**: Expand offline presence in tier-2 states since transaction volumes are highly skewed toward tier-1 states.
-- **Diversification**: Rebalance portfolio holdings to reduce exposure to the financial services sector and capture growth in defensive sectors like Pharmaceuticals and consumption.
+### 9. Top Holdings Sector Allocation (REQ-09)
+- **Dataset**: `09_portfolio_holdings.csv` / `fact_portfolio` (322 rows).
+- **Key Observation**: Banking & Financial Services represents the largest sector exposure (~28.4%), followed by Information Technology (~19.8%) and Pharmaceuticals (~17.7%).
 
-## 7. Conclusion
-The EDA phase is complete. The datasets are highly coherent, the SQLite database is populated correctly, and we have obtained deep insights that will feed the analytical dashboard and forecasting engine in the subsequent phases.
+### 10. Risk-Adjusted Returns & Benchmark Comparison (REQ-10)
+- **Dataset**: `07_scheme_performance.csv` / `fact_performance`.
+- **Key Observation**: Over 82% of equity schemes outperformed their 3-year benchmark index CAGR, generating positive Alpha (ranging from +1.2% to +5.8%).
+
+---
+
+## 3. Artifact Deliverables Verified
+- `notebooks/EDA_Analysis.ipynb`: Fully executable notebook with Plotly and Seaborn code cells and 10 explicit finding markdown cells.
+- `notebooks/EDA.ipynb`: Synchronized backward-compatible executable notebook.
+- `figures/`: 18 publication-quality PNG figures (300 DPI) matching all handbook specs.
+- `reports/phase3_rtm.md`: Requirement Traceability Matrix.
+- `reports/phase3_gap_analysis.md`: Gap Analysis documentation.

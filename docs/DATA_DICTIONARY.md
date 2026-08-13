@@ -38,8 +38,7 @@ This document contains the detailed data dictionary for the 10 raw CSV files in 
 
 ## 3. 03_aum_by_fund_house.csv
 
-| Column Name | Data Type | Description | Business Meaning | Example Values | Nullable | Expected Range | Candidate PK | Candidate FK | Data Quality Risks | Validation Rules |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| Column Name | Data Type | Description | Business Meaning | Example Values | Nullable | Expected Range | Candidate PK | Candidate FK | Data Quality Risks | | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | `date` | DATE | Quarter ending date | Reporting quarter date | `2022-03-31` | No | 2022 to 2025 quarters | Yes (part) | None | Non-quarter-end dates | Must be quarter end date |
 | `fund_house` | TEXT | AMC name | Fund house name | `SBI Mutual Fund` | No | Top AMCs in India | Yes (part) | `dim_fund.fund_house` | String mismatches | Must exist in master list |
 | `aum_lakh_crore` | REAL | AUM value in lakh crores | Asset scale indicator | `6.05` | No | `0.1` to `15.0` | No | None | Scaling confusion | Value must be positive |
@@ -152,3 +151,4 @@ This document contains the detailed data dictionary for the 10 raw CSV files in 
 | `date` | DATE | Trading business date | Index calculation date | `2022-01-03` | No | Jan 2022 to May 2026 | Yes (part) | `dim_date.date_id` | Non-trading dates | ISO 8601 YYYY-MM-DD |
 | `index_name` | TEXT | Benchmark name | Index name reference | `NIFTY50` | No | Index codes | Yes (part) | None | Spelling mismatch | Standard index list |
 | `close_value` | REAL | Daily close value price | Index closing point | `17492.79` | No | `> 0.0` | No | None | Sudden drop / zero value | Must be positive |
+Validation Rules |
