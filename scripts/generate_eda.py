@@ -647,9 +647,9 @@ def generate_eda_completion_report():
 - **Investor Demographics (REQ-05)**: PASS (Age distribution pie chart, SIP amount boxplot by age group, and gender split countplot).
 - **Geographic Distribution (REQ-06)**: PASS (Horizontal bar chart of SIP amount by state and T30 vs B30 city-tier pie chart).
 - **Folio Count Growth (REQ-07)**: PASS (Line chart from Jan 2022 start of 13.26 Cr to Dec 2025 peak of 26.12 Cr with milestones).
-- **NAV Return Correlation (REQ-08)**: PASS (Calculated daily percentage returns across 10 representative funds and built pairwise Seaborn correlation heatmap).
+- **NAV Return Correlation (REQ-08)**: PASS (Calculated daily percentage returns across 10 representative funds and built pairwise Seaborn correlation heatmap showing near-zero average correlation).
 - **Sector Allocation (REQ-09)**: PASS (Aggregated equity portfolio holdings sector weights into donut chart).
-- **Ten Key EDA Findings (REQ-10)**: PASS (10 structured Markdown finding cells in notebook with Insight, Evidence, and Interpretation).
+- **Ten Key EDA Findings (REQ-10)**: PASS (10 structured Markdown finding cells in notebook with Insight, Evidence, and Interpretation, all matching actual data).
 
 ## Dataset Verification
 - `01_fund_master.csv`: 40 schemes verified.
@@ -698,9 +698,9 @@ All 10 findings documented in dedicated notebook Markdown cells adhering to the 
 - Finding 5: Demographic Activity (26-35 Age Cohort) & SIP Ticket Sizes
 - Finding 6: Geographic Concentration in T30 Cities (66.3%) and Top Urban States
 - Finding 7: Industry Folio Count Doubling (13.26 Cr to 26.12 Cr)
-- Finding 8: High Positive Pairwise Return Correlation Among Large-Cap Funds (r ~ 0.88)
-- Finding 9: Banking & Financial Services Sector Weight Heavy Exposure (28.4%)
-- Finding 10: Active Management Alpha Outperformance (82.5% of schemes)
+- Finding 8: Near-Zero Pairwise Daily Return Correlation Across Schemes (diversification benefit)
+- Finding 9: Banking Sector Leads Equity Allocation (19.2% of aggregate weight)
+- Finding 10: Universal Active Alpha Outperformance (40/40 schemes = 100%)
 
 ## Validation Results
 - `unittest discover tests`: 14/14 tests passed (OK).
@@ -1049,10 +1049,10 @@ def generate_notebooks():
             "metadata": {},
             "source": [
                 "## 12. Pairwise NAV Return Correlation Analysis\n",
-                "### Finding 8: Top Equity Funds Display Strong Positive Daily Return Correlation (r = 0.82 to 0.94)\n",
-                "**Insight:** Daily percentage returns across large-cap equity funds demonstrate high systemic co-movement.\n",
+                "### Finding 8: Daily NAV Returns Across Schemes Exhibit Near-Zero Pairwise Correlation\n",
+                "**Insight:** Daily percentage returns across the 10 selected mutual fund schemes show very low pairwise correlation, indicating independent daily price movements.\n",
                 "**Evidence:** Visualized in `figures/eda/11_nav_return_correlation.png` and Seaborn heatmap below.\n",
-                "**Interpretation:** Pairwise daily return correlation across 10 representative equity funds averaged ~0.88, reflecting strong dependence on benchmark market indices (Nifty 50 / Nifty 100).",
+                "**Interpretation:** The average pairwise daily return correlation across 10 representative funds is approximately 0.00 (range -0.09 to +0.05), consistent with the independently generated NAV trajectories in the dataset. This suggests scheme-level diversification benefits in daily return space.",
             ],
         }
     )
@@ -1083,10 +1083,10 @@ def generate_notebooks():
             "metadata": {},
             "source": [
                 "## 13. Top Holdings Sector Allocation\n",
-                "### Finding 9: Banking & Financial Services Form the Core Equity Allocation (~28.4% Weight)\n",
-                "**Insight:** Equity portfolio holdings display significant concentration in banking and technology.\n",
+                "### Finding 9: Banking Sector Leads Equity Allocation at 19.2% of Aggregate Portfolio Weight\n",
+                "**Insight:** Equity portfolio holdings display meaningful concentration in banking, IT, and pharma sectors.\n",
                 "**Evidence:** Visualized in `figures/eda/12_sector_allocation.png` and Donut chart below.\n",
-                "**Interpretation:** Financial Services accounts for 28.4% of total equity holdings weight, followed by IT (19.8%) and Pharma (17.7%), exposing equity schemes to financial sector policy cycles.",
+                "**Interpretation:** Banking accounts for 19.2% of aggregate equity holdings weight, followed by IT (13.4%) and Pharma (12.0%), exposing equity schemes to financial sector policy cycles.",
             ],
         }
     )
@@ -1117,10 +1117,10 @@ def generate_notebooks():
             "metadata": {},
             "source": [
                 "## 14. Ten Key EDA Findings\n",
-                "### Finding 10: 82.5% of Active Schemes Delivered Positive 3-Year Benchmark Outperformance Alpha\n",
-                "**Insight:** Active mutual fund management successfully delivered alpha over a 3-year horizon.\n",
+                "### Finding 10: All 40 Schemes (100%) Delivered Positive 3-Year Benchmark Outperformance Alpha\n",
+                "**Insight:** Active mutual fund management universally delivered alpha over a 3-year horizon across every scheme in the dataset.\n",
                 "**Evidence:** Visualized in `figures/eda/18_benchmark_vs_scheme_returns.png`.\n",
-                "**Interpretation:** 33 out of 40 schemes (82.5%) rendered 3-year CAGR returns superior to their benchmark index, positioning them above the 45-degree parity line.",
+                "**Interpretation:** 40 out of 40 schemes (100%) rendered 3-year CAGR returns superior to their benchmark index, with all data points positioned above the 45-degree parity line.",
             ],
         }
     )

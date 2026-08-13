@@ -8,9 +8,9 @@
 - **Investor Demographics (REQ-05)**: PASS (Age distribution pie chart, SIP amount boxplot by age group, and gender split countplot).
 - **Geographic Distribution (REQ-06)**: PASS (Horizontal bar chart of SIP amount by state and T30 vs B30 city-tier pie chart).
 - **Folio Count Growth (REQ-07)**: PASS (Line chart from Jan 2022 start of 13.26 Cr to Dec 2025 peak of 26.12 Cr with milestones).
-- **NAV Return Correlation (REQ-08)**: PASS (Calculated daily percentage returns across 10 representative funds and built pairwise Seaborn correlation heatmap).
+- **NAV Return Correlation (REQ-08)**: PASS (Calculated daily percentage returns across 10 representative funds and built pairwise Seaborn correlation heatmap showing near-zero average correlation).
 - **Sector Allocation (REQ-09)**: PASS (Aggregated equity portfolio holdings sector weights into donut chart).
-- **Ten Key EDA Findings (REQ-10)**: PASS (10 structured Markdown finding cells in notebook with Insight, Evidence, and Interpretation).
+- **Ten Key EDA Findings (REQ-10)**: PASS (10 structured Markdown finding cells in notebook with Insight, Evidence, and Interpretation, all matching actual data).
 
 ## Dataset Verification
 - `01_fund_master.csv`: 40 schemes verified.
@@ -59,9 +59,9 @@ All 10 findings documented in dedicated notebook Markdown cells adhering to the 
 - Finding 5: Demographic Activity (26-35 Age Cohort) & SIP Ticket Sizes
 - Finding 6: Geographic Concentration in T30 Cities (66.3%) and Top Urban States
 - Finding 7: Industry Folio Count Doubling (13.26 Cr to 26.12 Cr)
-- Finding 8: High Positive Pairwise Return Correlation Among Large-Cap Funds (r ~ 0.88)
-- Finding 9: Banking & Financial Services Sector Weight Heavy Exposure (28.4%)
-- Finding 10: Active Management Alpha Outperformance (82.5% of schemes)
+- Finding 8: Near-Zero Pairwise Daily Return Correlation Across Schemes (diversification benefit)
+- Finding 9: Banking Sector Leads Equity Allocation (19.2% of aggregate weight)
+- Finding 10: Universal Active Alpha Outperformance (40/40 schemes = 100%)
 
 ## Validation Results
 - `unittest discover tests`: 14/14 tests passed (OK).
