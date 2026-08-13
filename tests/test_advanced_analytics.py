@@ -59,6 +59,39 @@ class TestAdvancedAnalytics(unittest.TestCase):
         self.assertFalse(df_var_report.empty)
         self.assertIn("var_95_pct", df_var_report.columns)
 
+    def test_run_cohort_and_sip_continuation(self):
+        """Verify cohort and SIP gap analysis."""
+        from cohort_analysis import (
+            run_cohort_analysis,
+            run_sip_continuation_analysis,
+        )
+
+        conn = sqlite3.connect(DATABASE_PATH)
+        df_cohort = run_cohort_analysis(conn)
+        df_cont = run_sip_continuation_analysis(conn)
+        conn.close()
+
+        self.assertFalse(df_cohort.empty)
+        self.assertIn("cohort_year", df_cohort.columns)
+        self.assertFalse(df_cont.empty)
+        self.assertIn("status", df_cont.columns)
+
+    def test_sector_hhi_and_rolling_sharpe(self):
+        """Verify sector HHI concentration and rolling Sharpe chart generation."""
+        from cohort_analysis import (
+            run_rolling_sharpe_analysis,
+            run_sector_hhi_analysis,
+        )
+
+        conn = sqlite3.connect(DATABASE_PATH)
+        df_hhi = run_sector_hhi_analysis(conn)
+        chart_path = run_rolling_sharpe_analysis(conn)
+        conn.close()
+
+        self.assertFalse(df_hhi.empty)
+        self.assertIn("hhi_sector", df_hhi.columns)
+        self.assertTrue(Path(chart_path).exists())
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,18 +1,21 @@
-"""Fund Recommendation Engine module.
+"""Fund Recommendation Engine module - Bluestock Mutual Fund Platform.
 
 Implements Day 6 Task 5 from Bluestock Capstone Handbook:
-- Input: Investor risk appetite ('Low', 'Moderate', 'High').
-- Filters matching SEBI risk categories.
-- Ranks and returns top 3 mutual funds based on Sharpe ratio.
+- Input risk appetite: 'Low', 'Moderate', 'High'
+- Matches input profile to fund's actual risk_category
+- Ranks matching funds by actual Sharpe ratio
+- Returns top 3 recommendations with CLI interface
 """
 
+import argparse
 import sqlite3
 import sys
 from pathlib import Path
 
 import pandas as pd
 
-sys.path.append(str(Path(__file__).resolve().parent))
+PROJECT_ROOT = Path("/Users/ruthvikgoud/Music/mutual-fund-analytics-Bluestock")
+sys.path.append(str(PROJECT_ROOT / "scripts"))
 
 from config import DATABASE_PATH
 from utils import setup_logging
@@ -40,8 +43,22 @@ def recommend_funds(
     Returns:
         pd.DataFrame: Recommendation table with fund name, category, Sharpe ratio, and CAGR.
     """
+    if not isinstance(risk_appetite, str) or not risk_appetite.strip():
+        logger.warning("Invalid risk appetite string provided. Defaulting to Moderate.")
+        risk_appetite = "Moderate"
+
     appetite_upper = risk_appetite.strip().upper()
-    target_risk_levels = RISK_MAPPING.get(appetite_upper, RISK_MAPPING["MODERATE"])
+    if appetite_upper not in RISK_MAPPING:
+        logger.warning(
+            f"Unrecognized risk appetite '{risk_appetite}'. Supported values: Low, Moderate, High. Defaulting to Moderate."
+        )
+        appetite_upper = "MODERATE"
+
+    target_risk_levels = RISK_MAPPING[appetite_upper]
+
+    if not Path(db_path).exists():
+        logger.error(f"Database path not found: {db_path}")
+        return pd.DataFrame()
 
     conn = sqlite3.connect(db_path)
     query = """
@@ -60,7 +77,9 @@ def recommend_funds(
     # Filter matching risk categories
     df_filtered = df[df["risk_category"].isin(target_risk_levels)]
     if df_filtered.empty:
-        # Fallback to full dataset sorted by Sharpe if risk category filter yields empty
+        logger.warning(
+            f"No funds match risk categories {target_risk_levels}. Returning top funds overall."
+        )
         df_filtered = df
 
     # Rank top N by Sharpe ratio
@@ -86,12 +105,7 @@ def recommend_funds(
 
 
 def print_recommendations(risk_appetite: str = "Moderate", top_n: int = 3) -> None:
-    """Format and print recommendation table to console.
-
-    Args:
-        risk_appetite: Risk profile input.
-        top_n: Top N recommendations.
-    """
+    """Format and print recommendation table to console."""
     print("\n==========================================")
     print(f" BLUESTOCK FUND RECOMMENDATIONS: {risk_appetite.upper()} RISK")
     print("==========================================")
@@ -110,6 +124,28 @@ def print_recommendations(risk_appetite: str = "Moderate", top_n: int = 3) -> No
         print(f"   - Sortino Ratio : {row['sortino_ratio']:.2f}\n")
 
 
+def main():
+    """CLI Entrypoint for Fund Recommender Engine."""
+    parser = argparse.ArgumentParser(
+        description="Bluestock Mutual Fund Recommender Engine"
+    )
+    parser.add_argument(
+        "--risk",
+        type=str,
+        default="Moderate",
+        choices=["Low", "Moderate", "High", "low", "moderate", "high"],
+        help="Investor risk appetite profile (Low, Moderate, High)",
+    )
+    parser.add_argument(
+        "--top",
+        type=int,
+        default=3,
+        help="Number of top funds to recommend (default: 3)",
+    )
+    args = parser.parse_args()
+
+    print_recommendations(risk_appetite=args.risk, top_n=args.top)
+
+
 if __name__ == "__main__":
-    for appetite in ["Low", "Moderate", "High"]:
-        print_recommendations(risk_appetite=appetite, top_n=3)
+    main()
