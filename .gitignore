@@ -139,6 +139,14 @@ Thumbs.db
 .env.local
 .env.*.local
 
+# Node / Frontend
+node_modules/
+.output/
+.vinxi/
+.output*
+
 # Databases
 *.db
 *.sqlite
+# Exception: project analytics database must be tracked
+!mutual_fund_analytics.db
