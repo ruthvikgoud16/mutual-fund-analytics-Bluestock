@@ -36,7 +36,7 @@ def discover_csv_files(directory: Path) -> list[Path]:
     Returns:
         List[Path]: Sorted list of CSV file paths.
     """
-    csv_files = sorted(list(directory.glob("*.csv")))
+    csv_files = sorted(directory.glob("*.csv"))
     logger.info(f"Discovered {len(csv_files)} CSV files in {directory}")
     return csv_files
 
@@ -227,10 +227,8 @@ def main() -> None:
             # Store in datasets dictionary by file prefix (e.g. '01_fund_master')
             prefix = csv_file.name.split(".")[0]
             datasets[prefix] = finding["dataframe"]
-        except Exception as e:
-            logger.error(
-                f"Error loading and profiling {csv_file.name}: {e}", exc_info=True
-            )
+        except Exception:
+            logger.exception(f"Error loading and profiling {csv_file.name}")
 
     # 5. Referential Integrity Check
     referential_missing = []
@@ -245,8 +243,8 @@ def main() -> None:
     # 7. Run Live NAV Ingestion
     try:
         run_live_nav_ingestion()
-    except Exception as e:
-        logger.error(f"Live NAV Ingestion process failed: {e}", exc_info=True)
+    except Exception:
+        logger.exception("Live NAV Ingestion process failed")
 
     logger.info("Day 1 Ingestion Pipeline executed successfully.")
 

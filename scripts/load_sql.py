@@ -209,11 +209,11 @@ def build_calendar_dimension(unique_dates: set[str]) -> list[dict[str, Any]]:
         List[Dict[str, Any]]: Calendar dimension records.
     """
     records = []
-    for dt_str in sorted(list(unique_dates)):
+    for dt_str in sorted(unique_dates):
         if pd.isna(dt_str) or not dt_str:
             continue
         try:
-            dt = datetime.strptime(dt_str, "%Y-%m-%d").date()
+            dt = datetime.strptime(dt_str, "%Y-%m-%d").date()  # noqa: DTZ007
             records.append(
                 {
                     "date_id": dt,
@@ -223,7 +223,7 @@ def build_calendar_dimension(unique_dates: set[str]) -> list[dict[str, Any]]:
                     "is_weekday": dt.weekday() < 5,
                 }
             )
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             logger.warning(f"Error parsing date string '{dt_str}': {e}")
     return records
 
@@ -239,7 +239,7 @@ def main() -> None:
         try:
             DATABASE_PATH.unlink()
             logger.info("Deleted existing SQLite database for fresh reload.")
-        except Exception as e:
+        except OSError as e:
             logger.warning(f"Could not delete existing DB: {e}")
 
     engine = create_engine(DATABASE_URL)
@@ -249,7 +249,7 @@ def main() -> None:
     logger.info("Database connection and tables created.")
 
     # 2. File list mapping
-    raw_files = sorted(list(RAW_DATA_DIR.glob("*.csv")))
+    raw_files = sorted(RAW_DATA_DIR.glob("*.csv"))
     cleaning_stats = []
     unique_dates = set()
 

@@ -91,9 +91,6 @@ def run_live_nav_ingestion(
         try:
             payload = fetch_scheme_nav(code)
             save_nav_to_csv(payload, code, output_dir)
-        except Exception as e:
-            logger.error(
-                f"Failed to fetch or save NAV for scheme code {code}: {e}",
-                exc_info=True,
-            )
+        except Exception:
+            logger.exception(f"Failed to fetch or save NAV for scheme code {code}")
     logger.info("Live NAV ingestion run complete.")

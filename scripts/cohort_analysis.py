@@ -206,7 +206,7 @@ def run_sip_continuation_analysis(conn: sqlite3.Connection) -> pd.DataFrame:
         gaps = group["transaction_date"].diff().dt.days.dropna()
         avg_gap = float(gaps.mean())
         max_gap = int(gaps.max()) if not gaps.empty else 0
-        is_at_risk = bool(avg_gap > 35.0 or max_gap > 45.0)
+        is_at_risk = bool(avg_gap > 35.0)
 
         records.append(
             {
