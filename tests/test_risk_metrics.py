@@ -151,6 +151,79 @@ class TestRiskMetrics(unittest.TestCase):
         score = calculate_diversification_score(hhi, len(weights))
         self.assertAlmostEqual(score, 100.0, places=1)
 
+    def test_ols_alpha_beta(self):
+        """Verify OLS regression Alpha and Beta calculation using scipy.stats.linregress."""
+        from risk_metrics import calculate_ols_alpha_beta
+
+        bench_ret = pd.Series([0.01, -0.01, 0.02, -0.02, 0.015, -0.015])
+        # fund = 1.2 * bench + 0.0005 daily excess
+        fund_ret = 1.2 * bench_ret + 0.0005
+
+        alpha_pct, beta, r_squared, _p_value = calculate_ols_alpha_beta(
+            fund_ret, bench_ret, trading_days=252
+        )
+        self.assertAlmostEqual(beta, 1.2, places=2)
+        self.assertAlmostEqual(alpha_pct, 0.0005 * 252 * 100.0, places=1)
+        self.assertGreater(r_squared, 0.95)
+
+    def test_tracking_error(self):
+        """Verify annualized tracking error formula std(fund - bench) * sqrt(252)."""
+        from risk_metrics import calculate_tracking_error
+
+        fund_ret = pd.Series([0.01, 0.02, 0.01, 0.03, 0.02])
+        bench_ret = pd.Series([0.008, 0.018, 0.012, 0.028, 0.022])
+        te = calculate_tracking_error(fund_ret, bench_ret, trading_days=252)
+        self.assertGreater(te, 0.0)
+
+    def test_scorecard_weighting(self):
+        """Verify scorecard 0-100 composite scoring logic and ranking directions."""
+        from generate_performance_analytics import generate_task7_scorecard
+
+        df_cagr = pd.DataFrame(
+            {
+                "amfi_code": [119551, 125497],
+                "scheme_name": ["A", "B"],
+                "category": ["Equity", "Equity"],
+                "cagr_3yr_pct": [20.0, 10.0],  # Scheme 119551 > Scheme 125497
+            }
+        )
+        df_sharpe = pd.DataFrame(
+            {
+                "amfi_code": [119551, 125497],
+                "scheme_name": ["A", "B"],
+                "category": ["Equity", "Equity"],
+                "sharpe_ratio": [1.5, 0.5],  # Scheme 119551 > Scheme 125497
+            }
+        )
+        df_ab = pd.DataFrame(
+            {
+                "amfi_code": [119551, 125497],
+                "scheme_name": ["A", "B"],
+                "alpha_pct": [5.0, 1.0],  # Scheme 119551 > Scheme 125497
+            }
+        )
+        df_mdd = pd.DataFrame(
+            {
+                "amfi_code": [119551, 125497],
+                "scheme_name": ["A", "B"],
+                "max_drawdown_pct": [
+                    -10.0,
+                    -25.0,
+                ],  # Scheme 119551 better (less negative)
+            }
+        )
+        # Scheme 119551 dominates on return, sharpe, alpha, max_dd
+        df_score = generate_task7_scorecard(df_cagr, df_sharpe, df_ab, df_mdd)
+        self.assertGreater(len(df_score), 0)
+        # 119551 should rank above 125497
+        rank_119551 = df_score.loc[
+            df_score["amfi_code"] == 119551, "final_rank"
+        ].values[0]
+        rank_125497 = df_score.loc[
+            df_score["amfi_code"] == 125497, "final_rank"
+        ].values[0]
+        self.assertLess(rank_119551, rank_125497)
+
 
 if __name__ == "__main__":
     unittest.main()

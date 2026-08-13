@@ -94,6 +94,29 @@ def generate_task1_returns() -> pd.DataFrame:
     df_ann_summary.to_csv(REPORTS_DIR / "returns_computed.csv", index=False)
     print(f"Saved {REPORTS_DIR / 'returns_computed.csv'}")
 
+    # Compute statistical distribution summary per scheme to validate return distribution
+    dist_list = []
+    for amfi_code, group in df_nav.groupby("amfi_code"):
+        scheme_name = df_fund.loc[
+            df_fund["amfi_code"] == amfi_code, "scheme_name"
+        ].values[0]
+        rets = group["daily_return_pct"].dropna()
+        dist_list.append(
+            {
+                "amfi_code": amfi_code,
+                "scheme_name": scheme_name,
+                "mean_pct": round(float(rets.mean()), 4),
+                "std_pct": round(float(rets.std()), 4),
+                "min_pct": round(float(rets.min()), 4),
+                "max_pct": round(float(rets.max()), 4),
+                "skewness": round(float(stats.skew(rets)), 4),
+                "kurtosis": round(float(stats.kurtosis(rets)), 4),
+            }
+        )
+    df_dist = pd.DataFrame(dist_list)
+    df_dist.to_csv(REPORTS_DIR / "return_distribution_summary.csv", index=False)
+    print(f"Saved {REPORTS_DIR / 'return_distribution_summary.csv'}")
+
     # Populate SQLite database column fact_nav.daily_return_pct
     for db in [DB_PATH, ALT_DB_PATH]:
         if db.exists():
@@ -519,6 +542,54 @@ def generate_task8_benchmark_chart(
     fig.savefig(path2, bbox_inches="tight", dpi=300)
     plt.close(fig)
     print(f"Saved {path1} and {path2}")
+
+    # Compute tracking error for all 40 schemes vs Nifty 50 and Nifty 100
+    df_fund = pd.read_csv(DATA_DIR / "01_fund_master.csv")
+    nifty50 = df_bm[df_bm["index_name"] == "NIFTY50"].sort_values("date")
+    nifty50["nifty50_ret"] = nifty50["close_value"].pct_change()
+
+    nifty100 = df_bm[df_bm["index_name"] == "NIFTY100"].sort_values("date")
+    nifty100["nifty100_ret"] = nifty100["close_value"].pct_change()
+
+    te_list = []
+    for amfi_code, group in df_nav.groupby("amfi_code"):
+        scheme_name = df_fund.loc[
+            df_fund["amfi_code"] == amfi_code, "scheme_name"
+        ].values[0]
+        group_ret = group.copy()
+        group_ret["fund_ret"] = group_ret["nav"].pct_change()
+
+        # Merge Nifty 50
+        m50 = group_ret.merge(nifty50[["date", "nifty50_ret"]], on="date").dropna()
+        diff50 = m50["fund_ret"] - m50["nifty50_ret"]
+        te50 = (
+            float(diff50.std() * np.sqrt(TRADING_DAYS) * 100.0)
+            if len(diff50) > 1
+            else 0.0
+        )
+
+        # Merge Nifty 100
+        m100 = group_ret.merge(nifty100[["date", "nifty100_ret"]], on="date").dropna()
+        diff100 = m100["fund_ret"] - m100["nifty100_ret"]
+        te100 = (
+            float(diff100.std() * np.sqrt(TRADING_DAYS) * 100.0)
+            if len(diff100) > 1
+            else 0.0
+        )
+
+        te_list.append(
+            {
+                "amfi_code": amfi_code,
+                "scheme_name": scheme_name,
+                "tracking_error_nifty50_pct": round(te50, 4),
+                "tracking_error_nifty100_pct": round(te100, 4),
+            }
+        )
+
+    df_te = pd.DataFrame(te_list)
+    df_te.to_csv(REPORTS_DIR / "tracking_error.csv", index=False)
+    print(f"Saved {REPORTS_DIR / 'tracking_error.csv'}")
+
     return [str(path1), str(path2)]
 
 
