@@ -7,12 +7,13 @@ and portfolio concentration metrics across mutual fund schemes.
 
 import sqlite3
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 import numpy as np
 import pandas as pd
+from scipy import stats
 
 # Ensure scripts directory is in sys.path
 sys.path.append(str(Path(__file__).resolve().parent))
@@ -23,7 +24,9 @@ from utils import setup_logging
 logger = setup_logging("risk_metrics")
 
 # Default Financial Assumptions
-DEFAULT_RISK_FREE_RATE: float = 0.06  # 6.0% p.a. risk-free rate for Indian market
+DEFAULT_RISK_FREE_RATE: float = (
+    0.065  # 6.5% p.a. risk-free rate (RBI repo rate proxy per handbook)
+)
 TRADING_DAYS_PER_YEAR: int = 252
 
 
@@ -387,6 +390,34 @@ def calculate_alpha(
     return float(alpha)
 
 
+def calculate_ols_alpha_beta(
+    fund_returns: pd.Series,
+    bench_returns: pd.Series,
+    trading_days: int = TRADING_DAYS_PER_YEAR,
+) -> tuple[float, float, float, float]:
+    """Calculate Alpha and Beta using OLS regression (scipy.stats.linregress).
+
+    Formula:
+        Regress fund returns on benchmark returns.
+        Beta = slope
+        Alpha = intercept * trading_days * 100 (%)
+
+    Returns:
+        tuple[float, float, float, float]: (alpha_pct, beta, r_squared, p_value)
+    """
+    df = pd.DataFrame({"fund": fund_returns, "bench": bench_returns}).dropna()
+    if len(df) < 5:
+        return 0.0, 1.0, 0.0, 1.0
+
+    res = stats.linregress(df["bench"], df["fund"])
+    beta = float(res.slope)
+    alpha_pct = float(res.intercept * trading_days * 100.0)
+    r_squared = float(res.rvalue**2)
+    p_value = float(res.pvalue)
+
+    return alpha_pct, beta, r_squared, p_value
+
+
 def calculate_tracking_error(
     fund_returns: pd.Series,
     bench_returns: pd.Series,
@@ -654,7 +685,7 @@ def compute_scheme_risk_metrics(
     """
     try:
         df_bench = pd.read_sql_query(query_bench, conn)
-    except Exception:
+    except Exception:  # noqa: BLE001
         # Fallback if table name is different
         df_bench = pd.DataFrame()
 
@@ -702,7 +733,7 @@ def compute_scheme_risk_metrics(
         hhi = 850.0
         div_score = 85.0
 
-    calc_date = datetime.now().date()
+    calc_date = datetime.now(tz=timezone.utc).date()
 
     return {
         "amfi_code": amfi_code,
@@ -817,7 +848,7 @@ def save_risk_metrics_to_db(
         calc_date_str = (
             str(r["calculation_date"])
             if r.get("calculation_date")
-            else datetime.now().strftime("%Y-%m-%d")
+            else datetime.now(tz=timezone.utc).strftime("%Y-%m-%d")
         )
         cursor.execute(
             insert_sql,
