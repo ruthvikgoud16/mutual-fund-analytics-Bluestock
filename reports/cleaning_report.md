@@ -23,5 +23,5 @@ This report outlines the results of the cleaning operations, row count profile t
 ## 2. Database Load Statistics
 
 - **SQL Engine:** SQLite
-- **File Location:** `/Users/ruthvikgoud/Music/mutual-fund-analytics-Bluestock/mutual_fund_analytics.db`
+- **File Location:** `/Users/ruthvikgoud/Applications/mutual-fund-analytics-Bluestock/mutual_fund_analytics.db`
 - **Date Calendar Range size:** 1608 unique dates loaded.

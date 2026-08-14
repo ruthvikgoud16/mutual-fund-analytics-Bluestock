@@ -1,7 +1,6 @@
 """Export real Bluestock Mutual Fund Analytics data from SQLite / CSVs to static JSON.
 
-Generates public/api/dashboard_data.json and dashboard/public/api/dashboard_data.json
-containing 100% REAL data for the Lovable React frontend.
+Generates frontend/public/api/dashboard_data.json containing 100% REAL data for the React frontend.
 """
 
 import json
@@ -396,11 +395,10 @@ def main():
     print("Extracting real Bluestock data from SQLite & CSVs...")
     data = export_data()
 
-    # Target output directories
+    # Target output directories (consolidated to frontend/)
     target_dirs = [
-        PROJECT_ROOT / "public" / "api",
-        PROJECT_ROOT / "dashboard" / "public" / "api",
-        PROJECT_ROOT / "bluestock-insights-hub" / "public" / "api",
+        PROJECT_ROOT / "frontend" / "public" / "api",
+        PROJECT_ROOT / "public" / "api",  # Also keep in root for backward compatibility
     ]
 
     for d in target_dirs:
