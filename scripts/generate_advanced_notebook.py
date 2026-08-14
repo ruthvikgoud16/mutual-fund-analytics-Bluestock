@@ -3,7 +3,7 @@
 import json
 from pathlib import Path
 
-PROJECT_ROOT = Path("/Users/ruthvikgoud/Music/mutual-fund-analytics-Bluestock")
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 NOTEBOOKS_DIR = PROJECT_ROOT / "notebooks"
 NOTEBOOKS_DIR.mkdir(exist_ok=True)
 

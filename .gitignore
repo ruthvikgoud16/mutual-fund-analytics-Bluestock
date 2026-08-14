@@ -148,5 +148,3 @@ node_modules/
 # Databases
 *.db
 *.sqlite
-# Exception: project analytics database must be tracked
-!mutual_fund_analytics.db

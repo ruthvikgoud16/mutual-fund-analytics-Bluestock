@@ -31,7 +31,7 @@ plt.rcParams.update(
     }
 )
 
-PROJECT_ROOT = Path("/Users/ruthvikgoud/Music/mutual-fund-analytics-Bluestock")
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = PROJECT_ROOT / "data" / "processed"
 DB_PATH = PROJECT_ROOT / "mutual_fund_analytics.db"
 ALT_DB_PATH = PROJECT_ROOT / "bluestock_mf.db"

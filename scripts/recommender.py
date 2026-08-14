@@ -14,7 +14,7 @@ from pathlib import Path
 
 import pandas as pd
 
-PROJECT_ROOT = Path("/Users/ruthvikgoud/Music/mutual-fund-analytics-Bluestock")
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.append(str(PROJECT_ROOT / "scripts"))
 
 from config import DATABASE_PATH
